@@ -21,8 +21,8 @@
 ## 变更后即时复测
 
 ```bash
-python -m src.runner --bot 知识库助手 --suite p0
-python -m src.runner --bot 知识库助手 --suite full --notify
+python -m src.runner --bot demo-bot --suite p0
+python -m src.runner --bot demo-bot --suite full --notify
 ```
 
 ## 套件与频率对照

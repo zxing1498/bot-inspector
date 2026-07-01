@@ -24,7 +24,7 @@ def test_build_help_text_uses_inspector_name(monkeypatch):
     monkeypatch.setenv("INSPECTOR_AT_NAME", "bot检查员")
     text = build_help_text()
     assert "bot检查员" in text
-    assert "尾程时效质量助手" not in text
+    assert "legacy-internal-inspector" not in text
     assert "可用性、有效性" in text
 
 
@@ -46,10 +46,10 @@ def test_parse_default():
 
 
 def test_parse_full_bot():
-    err, suite, bot = parse_command("巡检 full 尾程hermes-ada")
+    err, suite, bot = parse_command("巡检 full demo-agent")
     assert err is None
     assert suite == "full"
-    assert bot == "尾程hermes-ada"
+    assert bot == "demo-agent"
 
 
 def test_parse_inspect_prefix():
@@ -89,7 +89,7 @@ def test_parse_pause_command():
     assert parse_pause_command("暂停对demo-bot的巡检") == "demo-bot"
     assert parse_pause_command("暂停 demo-bot") == "demo-bot"
     assert parse_pause_command("停止巡检 demo-bot") == "demo-bot"
-    assert parse_pause_command("中断 尾程hermes-ada") == "尾程hermes-ada"
+    assert parse_pause_command("中断 demo-agent") == "demo-agent"
     assert parse_pause_command("暂停") == ""
     assert parse_pause_command("取消测试") is None
     assert parse_pause_command("巡检 p0") is None
@@ -101,7 +101,7 @@ def test_resolve_pause_bot(monkeypatch):
     def fake_load_bots():
         return [
             BotConfig(name="demo-bot", app_id="", owner="", env="staging"),
-            BotConfig(name="尾程hermes-ada", app_id="", owner="", env="staging"),
+            BotConfig(name="demo-agent", app_id="", owner="", env="staging"),
         ]
 
     def fake_load_bot(name):
@@ -113,7 +113,7 @@ def test_resolve_pause_bot(monkeypatch):
     monkeypatch.setattr("src.chat_trigger.load_bots", fake_load_bots)
     monkeypatch.setattr("src.chat_trigger.load_bot", fake_load_bot)
     assert resolve_pause_bot("demo-bot") == "demo-bot"
-    assert resolve_pause_bot("hermes") == "尾程hermes-ada"
+    assert resolve_pause_bot("agent") == "demo-agent"
 
 
 def test_build_help_text_includes_pause():

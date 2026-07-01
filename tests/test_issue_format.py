@@ -25,14 +25,14 @@ def test_format_issue_with_repro_expected_and_reply_preview():
         section="p0",
         status=TestStatus.FAIL,
         message="未在 30s 内收到回复; 回复内容为空",
-        repro_steps="1. 渠道：私聊\n2. 用例：Bot 能在私聊中接收并回复消息（p0_dm_reply）\n3. 目标 Bot：尾程hermes-ada\n4. Inspector 发送消息\n5. 消息内容：你好，请回复「收到」",
+        repro_steps="1. 渠道：私聊\n2. 用例：Bot 能在私聊中接收并回复消息（p0_dm_reply）\n3. 目标 Bot：demo-agent\n4. Inspector 发送消息\n5. 消息内容：你好，请回复「收到」",
         expected="30s 内收到最终回复 | 回复内容非空",
         actual="无回复 | 空",
         severity="P0",
         replies=[ReplyInfo(content="思考中…", msg_type="text", latency_sec=2.1)],
     )
 
-    issue = format_issue(result, bot_name="尾程hermes-ada", index=1, case=case)
+    issue = format_issue(result, bot_name="demo-agent", index=1, case=case)
 
     assert issue["id"] == "ISS-001"
     assert len(issue["repro_lines"]) >= 4
@@ -66,7 +66,7 @@ def test_format_issue_falls_back_to_case_assertions_when_expected_missing():
         severity="P0",
     )
 
-    issue = format_issue(result, bot_name="尾程hermes-ada", index=2, case=case)
+    issue = format_issue(result, bot_name="demo-agent", index=2, case=case)
 
     assert issue["repro_lines"][0].startswith("目标 Bot")
     assert any("话题" in line for line in issue["expected_lines"])

@@ -23,7 +23,7 @@ def test_parse_explain_by_issue():
 def test_parse_explain_from_session_case_name():
     session = ChatSession(chat_id="c1", operator_open_id="u1")
     session.last_inspection = InspectionSnapshot(
-        bot_name="尾程小助",
+        bot_name="demo-assistant",
         suite="p0",
         started_at="",
         md_path="reports/x.md",
@@ -45,7 +45,7 @@ def test_parse_explain_from_session_case_name():
     q = parse_explain_query("无权限文档这项为什么失败", session)
     assert q is not None
     assert q.case_id == "p0_doc_denied"
-    assert q.bot_name == "尾程小助"
+    assert q.bot_name == "demo-assistant"
 
 
 def test_classify_advise():
@@ -53,4 +53,4 @@ def test_classify_advise():
 
 
 def test_classify_execute_unknown():
-    assert classify_intent("巡检 p0 尾程小助") == Intent.UNKNOWN
+    assert classify_intent("巡检 p0 demo-assistant") == Intent.UNKNOWN

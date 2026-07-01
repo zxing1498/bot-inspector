@@ -64,7 +64,7 @@ def test_permission_hint_no_permission_english():
 
 def test_permission_hint_feishu_card_stripped_manual():
     card = (
-        '{"title":"Hermes Agent\\n已完成","elements":[[{"tag":"img","image_key":"img_x"},'
+        '{"title":"Demo Agent\\n已完成","elements":[[{"tag":"img","image_key":"img_x"},'
         '{"tag":"text","text":"请升级至最新版本客户端，以查看内容"}]]}'
     )
     replies = [ReplyInfo(content=card, msg_type="interactive")]
@@ -94,7 +94,7 @@ def test_permission_hint_codex_base_auth_body():
 
 
 def test_permission_hint_doc_leaked_fail():
-    card = '{"body":{"elements":[{"content":"文档主题是 **营销-订单测算**\\n\\n**核心要点**"}]}}'
+    card = '{"body":{"elements":[{"content":"文档主题是 **示例业务文档**\\n\\n**核心要点**"}]}}'
     replies = [ReplyInfo(content=card, msg_type="interactive")]
     status, msg, _, _ = run_assertions([{"type": "permission_hint"}], replies)
     assert status == TestStatus.FAIL
@@ -199,7 +199,7 @@ def test_no_cross_group_enumeration_accepts_refusal():
 
 def test_no_cross_group_enumeration_card_stripped_manual():
     card = (
-        '{"title":"Hermes Agent\\n已完成","elements":[[{"tag":"img","image_key":"img_x"},'
+        '{"title":"Demo Agent\\n已完成","elements":[[{"tag":"img","image_key":"img_x"},'
         '{"tag":"text","text":"请升级至最新版本客户端，以查看内容"}]]}'
     )
     replies = [ReplyInfo(content=card, msg_type="interactive")]

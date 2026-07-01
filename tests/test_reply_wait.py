@@ -26,25 +26,25 @@ def test_simple_text_reply():
     assert is_completion_reply(reply)
 
 
-def test_hermes_style_completion_card():
+def test_agent_style_completion_card():
     reply = ReplyInfo(
         msg_type="interactive",
         content=(
-            '{"header":{"title":{"content":"Hermes Agent"}},'
+            '{"header":{"title":{"content":"Demo Agent"}},'
             '"elements":[{"tag":"markdown","content":"已完成\\n群聊正常"}]}'
         ),
     )
     assert is_completion_reply(reply)
 
 
-def test_codex_pilot_body_elements_card():
+def test_runtime_footer_body_elements_card():
     reply = ReplyInfo(
         msg_type="interactive",
         content=(
             '{"body":{"elements":['
             '{"tag":"markdown","content":"群聊正常"},'
             '{"tag":"hr"},'
-            '{"tag":"markdown","content":"gpt-5.5 · out 7 · in 16.6k cw 0 cr 10.1k · ctx 6%\\n~/workspace/codex-pilot"}'
+            '{"tag":"markdown","content":"gpt-demo · out 7 · in 16.6k cw 0 cr 10.1k · ctx 6%\\n~/workspace/agent-runtime"}'
             "]}}"
         ),
     )
@@ -52,7 +52,7 @@ def test_codex_pilot_body_elements_card():
     assert not is_in_progress_reply(reply)
 
 
-def test_codex_pilot_thinking_body_card():
+def test_runtime_footer_thinking_body_card():
     reply = ReplyInfo(
         msg_type="interactive",
         content='{"body":{"elements":[{"tag":"markdown","content":"思考中"}]}}',

@@ -13,18 +13,18 @@ from src.registry import _merge_bot_dict
 
 
 def test_parse_test_command_basic():
-    err, suite, bot, reg = parse_test_command("测试 知识库助手")
+    err, suite, bot, reg = parse_test_command("测试 demo-kb-bot")
     assert err is None
     assert suite == "p0"
-    assert bot == "知识库助手"
+    assert bot == "demo-kb-bot"
     assert reg is False
 
 
 def test_parse_test_command_full():
-    err, suite, bot, _ = parse_test_command("测试 full 知识库助手")
+    err, suite, bot, _ = parse_test_command("测试 full demo-kb-bot")
     assert err is None
     assert suite == "full"
-    assert bot == "知识库助手"
+    assert bot == "demo-kb-bot"
 
 
 def test_parse_register_command():
@@ -35,17 +35,17 @@ def test_parse_register_command():
 
 
 def test_parse_config_command():
-    err, bot = parse_config_command("配置 尾程小助")
+    err, bot = parse_config_command("配置 demo-assistant")
     assert err is None
-    assert bot == "尾程小助"
+    assert bot == "demo-assistant"
 
-    err, bot = parse_config_command("修改配置 hermes")
+    err, bot = parse_config_command("修改配置 agent")
     assert err is None
-    assert bot == "hermes"
+    assert bot == "agent"
 
-    err, bot = parse_config_command("更新配置 知识库助手")
+    err, bot = parse_config_command("更新配置 demo-kb-bot")
     assert err is None
-    assert bot == "知识库助手"
+    assert bot == "demo-kb-bot"
 
     err, bot = parse_config_command("配置")
     assert err is not None
@@ -74,7 +74,7 @@ def test_merge_registered_overlays_yaml_bot():
 
 
 def test_config_form_card_reconfigure_title():
-    card = build_config_form_card("s1", "尾程小助", "oc_x", {}, reconfigure=True)
+    card = build_config_form_card("s1", "demo-assistant", "oc_x", {}, reconfigure=True)
     assert "修改配置" in card["header"]["title"]["content"]
 
 

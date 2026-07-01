@@ -62,7 +62,7 @@ GET /open-apis/im/v1/chats
 
 ### 私聊（dm）特别注意
 
-**不要**把「你与 ada 私聊时问出来的 chat_id」填进 `bots.yaml` 的 `dm` 字段。
+**不要**把「你与目标 Bot 私聊时问出来的 chat_id」填进 `bots.yaml` 的 `dm` 字段。
 
 - 该 chat_id 属于 **用户 ↔ 被测 Bot** 的会话
 - Inspector 是另一个 Bot，不在该会话里，发消息会报 `Bot/User can NOT be out of the chat`
@@ -94,5 +94,5 @@ FEISHU_APP_SECRET=xxx
 ```bash
 pip install -r requirements.txt
 python -m src.runner --bot all --suite p0 --dry-run
-python -m src.runner --bot 知识库助手 --suite p0
+python -m src.runner --bot demo-bot --suite p0
 ```

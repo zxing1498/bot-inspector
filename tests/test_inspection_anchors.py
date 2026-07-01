@@ -54,7 +54,7 @@ def test_prepend_alias_appends():
 
 def test_summary_card_lists_failed_search_keys():
     report = BotRunReport(
-        bot_name="尾程小助",
+        bot_name="demo-assistant",
         owner="tester",
         env="prod",
         started_at=datetime(2026, 6, 25, 17, 0),
@@ -122,7 +122,7 @@ def test_progress_card_has_search_key():
 
 def test_format_summary_text_includes_attention():
     report = BotRunReport(
-        bot_name="尾程小助",
+        bot_name="demo-assistant",
         owner="",
         env="prod",
         started_at=datetime.now(),

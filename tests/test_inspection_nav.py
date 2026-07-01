@@ -14,7 +14,7 @@ def test_format_issue_includes_navigation():
         message="无回复",
     )
     issue = format_issue(
-        result, bot_name="尾程小助", index=1, run_id="R260625-120000-ab"
+        result, bot_name="demo-assistant", index=1, run_id="R260625-120000-ab"
     )
     assert issue["search_key"] == "R260625-120000-ab·p0_slow_ack"
     assert issue["explain_command"] == explain_case_command("p0_slow_ack")

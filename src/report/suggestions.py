@@ -21,7 +21,7 @@ SUGGESTION_RULES: list[tuple[str, str, str]] = [
     ("文件", "P1", "检查文件下载 Content-Disposition 编码，确保中文文件名不乱码。"),
     ("私聊", "P0", "私聊自动化需配置被测 Bot 的 open_id；勿使用用户与 Bot 私聊的 chat_id。"),
     ("Interrupting", "P1", "避免在 Agent 未完成上一轮时连续发送用例；已启用 completion_wait 与 case_interval。"),
-    ("最终回复", "P0", "确保 Hermes 卡片最终进入「已完成」状态，而非停留在思考中/中断提示。"),
+    ("最终回复", "P0", "确保 Agent 卡片最终进入「已完成」状态，而非停留在思考中/中断提示。"),
 ]
 
 WEBHOOK_RULES: list[tuple[str, str, str]] = [
@@ -38,7 +38,7 @@ LONG_CONNECTION_RULES: list[tuple[str, str, str]] = [
     (
         "回调",
         "P0",
-        "长连接模式无 webhook 地址；请检查 Hermes Gateway 进程与飞书事件日志是否 SUCCESS。",
+        "长连接模式无 webhook 地址；请检查长连接网关进程与飞书事件日志是否 SUCCESS。",
     ),
 ]
 

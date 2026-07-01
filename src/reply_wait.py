@@ -1,4 +1,4 @@
-"""Detect final bot replies (e.g. Hermes「已完成」cards) vs in-progress status."""
+"""Detect final bot replies (e.g. Agent「已完成」cards) vs in-progress status."""
 
 from __future__ import annotations
 
@@ -14,13 +14,13 @@ IN_PROGRESS_RE = re.compile(
 )
 COMPLETION_RE = re.compile(r"已完成|Completed", re.IGNORECASE)
 CARD_FOOTER_RE = re.compile(
-    r"gpt-\d|~/workspace|codex-pilot|·\s*out\s+\d+\s*·\s*in",
+    r"gpt-\d|~/workspace|agent-runtime|·\s*out\s+\d+\s*·\s*in",
     re.IGNORECASE,
 )
 
 
 def card_elements(card: dict[str, Any]) -> list[dict[str, Any]]:
-    """Support standard Feishu cards and codex-pilot style `body.elements`."""
+    """Support standard Feishu cards and agent-runtime style `body.elements`."""
     elements = card.get("elements")
     if isinstance(elements, list) and elements:
         return [e for e in elements if isinstance(e, dict)]

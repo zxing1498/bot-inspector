@@ -8,11 +8,11 @@ from src.conversation.session import CaseSnapshot, ChatSession, InspectionSnapsh
 def test_build_explain_facts_with_case():
     session = ChatSession(chat_id="c1", operator_open_id="u1")
     session.last_inspection = InspectionSnapshot(
-        bot_name="尾程小助",
+        bot_name="demo-assistant",
         suite="p0",
         started_at="2026-06-25T10:00:00",
-        md_path="reports/2026-06-25/尾程小助.md",
-        html_path="reports/2026-06-25/尾程小助.html",
+        md_path="reports/2026-06-25/demo-assistant.md",
+        html_path="reports/2026-06-25/demo-assistant.html",
         pass_count=3,
         fail_count=1,
         failed_cases=[
@@ -22,7 +22,7 @@ def test_build_explain_facts_with_case():
                 status="不通过",
                 message="未检测到权限相关提示",
                 expected="含权限/授权提示",
-                actual="Bot 总结了营销-订单测算",
+                actual="Bot 总结了示例业务文档",
                 issue_id="ISS-001",
             )
         ],
@@ -33,13 +33,13 @@ def test_build_explain_facts_with_case():
                 status="不通过",
                 message="未检测到权限相关提示",
                 expected="含权限/授权提示",
-                actual="Bot 总结了营销-订单测算",
+                actual="Bot 总结了示例业务文档",
                 issue_id="ISS-001",
             )
         ],
     )
     facts, chunks, case = build_explain_facts(
-        ExplainQuery(case_id="p0_doc_denied", bot_name="尾程小助"),
+        ExplainQuery(case_id="p0_doc_denied", bot_name="demo-assistant"),
         session,
     )
     assert case is not None

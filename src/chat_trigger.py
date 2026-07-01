@@ -352,7 +352,7 @@ def parse_test_command(text: str) -> tuple[str | None, str, str, bool]:
     register_only = bool(re.match(r"^注册", text, re.IGNORECASE))
     rest = (m.group(1) or "").strip()
     if not rest:
-        return ("请指定要测试的 Bot 名称，例如：测试 知识库助手", "", "", register_only)
+        return ("请指定要测试的 Bot 名称，例如：测试 demo-kb-bot", "", "", register_only)
 
     tokens = rest.split()
     suite = "p0"
