@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ bot_name }} · 飞书 Bot 验收报告</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080b10;
+      --bg-elevated: #0f141c;
+      --surface: #141b26;
+      --surface-hover: #1a2332;
+      --border: rgba(148, 163, 184, 0.12);
+      --border-strong: rgba(148, 163, 184, 0.22);
+      --text: #eef2f7;
+      --text-secondary: #94a3b8;
+      --text-dim: #64748b;
+      --jade: #3ddea8;
+      --jade-dim: rgba(61, 222, 168, 0.14);
+      --gold: #e8b86d;
+      --gold-dim: rgba(232, 184, 109, 0.12);
+      --pass: #4ade80;
+      --fail: #f87171;
+      --warn: #fbbf24;
+      --manual: #60a5fa;
+      --na: #64748b;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      --font-display: "Outfit", "Noto Sans SC", sans-serif;
+      --font-body: "Noto Sans SC", system-ui, sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+      --nav-width: 220px;
+      --topbar-h: 56px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--topbar-h) + 20px); }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Atmospheric background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 0% 0%, rgba(61, 222, 168, 0.07), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 5%, rgba(232, 184, 109, 0.05), transparent 50%),
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(96, 165, 250, 0.04), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      opacity: 0.35;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top bar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--topbar-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(8, 11, 16, 0.82);
+      backdrop-filter: blur(16px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-brand {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar-brand .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--jade);
+      box-shadow: 0 0 12px var(--jade);
+    }
+
+    .topbar-nav {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .topbar-nav::-webkit-scrollbar { display: none; }
+
+    .topbar-nav a {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .topbar-nav a:hover,
+    .topbar-nav a.active {
+      color: var(--jade);
+      background: var(--jade-dim);
+    }
+
+    /* Layout */
+    .layout {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 24px 100px;
+    }
+
+    /* Hero */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: end;
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--jade);
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .meta-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .meta-pill {
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 14px;
+    }
+
+    .meta-pill strong { color: var(--text); font-weight: 500; }
+
+    /* Score hero card */
+    .score-hero {
+      background: linear-gradient(145deg, var(--surface) 0%, var(--bg-elevated) 100%);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      text-align: center;
+      min-width: 200px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .score-hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--jade), var(--gold));
+    }
+
+    .score-ring-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 14px;
+    }
+
+    .score-ring-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .score-ring-bg {
+      fill: none;
+      stroke: var(--bg-elevated);
+      stroke-width: 8;
+    }
+
+    .score-ring-fg {
+      fill: none;
+      stroke: url(#scoreGradient);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: calc(283 - (283 * {{ score.overall | int }}) / 100);
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .score-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-num {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .score-grade {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--gold);
+      margin-top: 4px;
+      letter-spacing: 0.08em;
+    }
+
+    .score-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .score-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 8px;
+    }
+
+    /* Verdict banner */
+    .verdict {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      margin-bottom: 36px;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    .verdict-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .verdict.pass .verdict-icon { background: rgba(74, 222, 128, 0.15); }
+    .verdict.partial .verdict-icon { background: rgba(251, 191, 36, 0.15); }
+    .verdict.fail .verdict-icon { background: rgba(248, 113, 113, 0.15); }
+
+    .verdict strong { font-size: 16px; font-weight: 600; display: block; margin-bottom: 4px; }
+    .verdict p { font-size: 14px; color: var(--text-secondary); }
+
+    /* Sections */
+    section {
+      margin-bottom: 48px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .section-head .hint {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    /* Dimension grid */
+    .dim-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .dim-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+
+    .dim-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+    }
+
+    .dim-card h3 {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .dim-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .dim-val {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--jade);
+    }
+
+    .dim-weight {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .dim-bar {
+      height: 4px;
+      background: var(--bg-elevated);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .dim-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--jade), #5eead4);
+      border-radius: 999px;
+      width: 0;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dim-card.in-view .dim-bar-fill {
+      width: var(--pct);
+    }
+
+    .dim-meta {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* Nav panel */
+    .nav-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .nav-hint {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: var(--jade-dim);
+      border: 1px solid rgba(61, 222, 168, 0.2);
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .nav-hint strong { color: var(--jade); }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background 0.15s; }
+    tbody tr:hover td { background: rgba(61, 222, 168, 0.04); }
+
+    .nav-table a,
+    .anchor-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--jade);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--jade-dim);
+      border: 1px solid rgba(61, 222, 168, 0.25);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-table a:hover,
+    .anchor-link:hover {
+      background: rgba(61, 222, 168, 0.25);
+      color: #5eead4;
+    }
+
+    .anchor-sep { color: var(--text-dim); margin: 0 4px; }
+
+    /* Chips */
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      transition: border-color 0.2s;
+    }
+
+    .chip:hover { border-color: var(--border-strong); }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    .badge.pass { background: rgba(74, 222, 128, 0.15); color: var(--pass); }
+    .badge.fail { background: rgba(248, 113, 113, 0.15); color: var(--fail); }
+    .badge.warn { background: rgba(251, 191, 36, 0.15); color: var(--warn); }
+    .badge.manual { background: rgba(96, 165, 250, 0.15); color: var(--manual); }
+    .badge.na { background: rgba(100, 116, 139, 0.15); color: var(--na); }
+
+    .mono {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Copy controls */
+    .copy-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .copy-chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      color: var(--text-secondary);
+      word-break: break-all;
+      max-width: 100%;
+    }
+
+    .copy-btn {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(61, 222, 168, 0.3);
+      background: var(--jade-dim);
+      color: var(--jade);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+      background: rgba(61, 222, 168, 0.25);
+      transform: scale(1.02);
+    }
+
+    .copy-btn.copied {
+      color: var(--pass);
+      border-color: rgba(74, 222, 128, 0.4);
+      background: rgba(74, 222, 128, 0.12);
+    }
+
+    /* Issues */
+    .issue-grid { display: grid; gap: 16px; }
+
+    .issue-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border-left: 4px solid var(--fail);
+      transition: box-shadow 0.25s;
+    }
+
+    .issue-card:hover { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+    .issue-card.p1 { border-left-color: var(--warn); }
+
+    .issue-header {
+      padding: 18px 22px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      user-select: none;
+    }
+
+    .issue-header:hover { background: var(--surface-hover); }
+
+    .issue-id {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--jade);
+      margin-bottom: 6px;
+    }
+
+    .issue-desc { font-weight: 600; font-size: 15px; line-height: 1.4; }
+
+    .issue-toggle {
+      font-size: 18px;
+      color: var(--text-dim);
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .issue-card.open .issue-toggle { transform: rotate(180deg); }
+
+    .issue-body {
+      display: none;
+      padding: 0 22px 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .issue-card.open .issue-body { display: block; }
+
+    .issue-body dt {
+      color: var(--text);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+
+    .issue-body dd { margin-left: 0; word-break: break-word; }
+    .issue-body ol, .issue-body ul { padding-left: 20px; margin-top: 4px; }
+    .issue-body li + li { margin-top: 4px; }
+
+    /* Suggestions */
+    .suggestions {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .suggestions li {
+      background: var(--gold-dim);
+      border: 1px solid rgba(232, 184, 109, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      position: relative;
+      padding-left: 36px;
+    }
+
+    .suggestions li::before {
+      content: "→";
+      position: absolute;
+      left: 16px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow);
+      z-index: 200;
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Back to top */
+    .back-top {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--jade);
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.3s;
+      z-index: 99;
+      display: grid;
+      place-items: center;
+    }
+
+    .back-top.visible { opacity: 1; transform: translateY(0); }
+    .back-top:hover { background: var(--jade-dim); border-color: var(--jade); }
+
+    /* Target highlight */
+    tr:target, article:target {
+      animation: highlight 1.5s ease;
+    }
+
+    @keyframes highlight {
+      0%, 30% { background: rgba(61, 222, 168, 0.12); }
+      100% { background: transparent; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+      .score-hero { justify-self: stretch; }
+      .topbar-nav { display: none; }
+    }
+
+    @media print {
+      .topbar, .back-top, .toast, .copy-btn { display: none !important; }
+      body { background: white; color: black; }
+      .issue-body { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="dot"></span>
+      {{ bot_name }} · 验收报告
+    </div>
+    <nav class="topbar-nav" aria-label="页面导航">
+      <a href="#scores">评分</a>
+      {% if run_id %}<a href="#chat-navigation">定位</a>{% endif %}
+      <a href="#overview">总览</a>
+      <a href="#p0">P0</a>
+      {% if issues %}<a href="#issues">问题</a>{% endif %}
+      {% if suggestions %}<a href="#suggestions">建议</a>{% endif %}
+    </nav>
+  </header>
+
+  <div class="layout">
+    <div class="hero">
+      <div>
+        <div class="hero-eyebrow">Feishu Bot Inspector · {{ suite_label }}</div>
+        <h1>{{ bot_name }}</h1>
+        <div class="meta-grid">
+          <span class="meta-pill"><strong>负责人</strong> {{ owner_display }}</span>
+          <span class="meta-pill"><strong>环境</strong> {{ env_display }}</span>
+          <span class="meta-pill"><strong>时间</strong> {{ started_at }} — {{ finished_at }}</span>
+          {% if run_id %}<span class="meta-pill mono">{{ run_id }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="score-hero">
+        <div class="score-ring-wrap">
+          <svg class="score-ring-svg" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#3ddea8" />
+                <stop offset="100%" stop-color="#e8b86d" />
+              </linearGradient>
+            </defs>
+            <circle class="score-ring-bg" cx="50" cy="50" r="45" />
+            <circle class="score-ring-fg" cx="50" cy="50" r="45" />
+          </svg>
+          <div class="score-center">
+            <div class="score-num">{{ score.overall }}</div>
+            <div class="score-grade">{{ score.grade }}</div>
+          </div>
+        </div>
+        <div class="score-label">综合评分 · {{ score.grade_label }}</div>
+        <div class="score-sub">
+          {% if is_full %}P0 {{ p0_pass }}/{{ p0_total }} · 全量 {{ run_pass }}/{{ run_total }}{% else %}P0 {{ p0_pass }}/{{ p0_total }}{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="verdict {{ verdict_class }}">
+      <div class="verdict-icon">{% if verdict_class == 'pass' %}✓{% elif verdict_class == 'partial' %}!{% else %}✕{% endif %}</div>
+      <div>
+        <strong>{{ verdict_title }}</strong>
+        <p>{{ verdict_desc }}</p>
+      </div>
+    </div>
+
+    <section id="scores">
+      <div class="section-head">
+        <h2>综合评分</h2>
+        <span class="hint">百分制 · 四维加权</span>
+      </div>
+      <div class="dim-grid">
+        {% for dim in score.dimensions %}
+        <div class="dim-card" data-pct="{{ dim.score }}%">
+          <h3>{{ dim.label }}</h3>
+          <div class="dim-row">
+            <span class="dim-val">{{ dim.score }}</span>
+            <span class="dim-weight">权重 {{ dim.weight_pct }}%</span>
+          </div>
+          <div class="dim-bar"><div class="dim-bar-fill" style="--pct: {{ dim.score }}%"></div></div>
+          <p class="dim-meta">{{ dim.summary }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if run_id %}
+    <section class="nav-panel" id="chat-navigation">
+      <div class="section-head" style="border:none;padding:0;margin-bottom:16px">
+        <h2>群内定位</h2>
+        <span class="hint">Ctrl+F 搜索</span>
+      </div>
+      <div class="nav-hint">
+        <span>在飞书群聊中按 <strong>Ctrl+F</strong>，粘贴搜索词定位本轮探测消息</span>
+        <span class="copy-chip">{{ run_search_key }}</span>
+        <button type="button" class="copy-btn" data-copy="{{ run_search_key }}">复制整轮</button>
+      </div>
+      {% if navigation_items %}
+      <div class="table-wrap">
+        <table class="nav-table">
+          <thead>
+            <tr>
+              <th>用例</th>
+              <th>复制搜索</th>
+              <th>追问检查员</th>
+              <th>报告锚点</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in navigation_items %}
+            <tr>
+              <td>
+                <strong>{{ item.case_name }}</strong><br>
+                <span class="mono">{{ item.case_id }}</span><br>
+                <span class="badge {{ status_class(item.status) }}">{{ item.status }}</span>
+              </td>
+              <td>
+                <div class="copy-row">
+                  <span class="copy-chip">{{ item.search_key }}</span>
+                  <button type="button" class="copy-btn" data-copy="{{ item.search_key }}">复制</button>
+                </div>
+              </td>
+              <td>
+                <div class="copy-row">
+                  <span class="copy-chip">{{ item.explain_command }}</span>
+                  <button type="button" class="copy-btn" data-copy="{{ item.explain_command }}">复制</button>
+                </div>
+                {% if item.explain_issue_command %}
+                <div class="copy-row">
+                  <span class="copy-chip">{{ item.explain_issue_command }}</span>
+                  <button type="button" class="copy-btn" data-copy="{{ item.explain_issue_command }}">复制</button>
+                </div>
+                {% endif %}
+              </td>
+              <td>
+                <a class="anchor-link" href="#p0-row-{{ item.case_id }}">P0 表</a>
+                {% if item.explain_issue_command %}
+                <span class="anchor-sep">·</span>
+                <a class="anchor-link" href="#issue-{{ item.case_id }}">问题</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    <section id="overview">
+      <div class="section-head">
+        <h2>章节总览</h2>
+      </div>
+      <div class="chips">
+        {% for section, label in sections %}
+        <div class="chip">
+          <span>{{ label }}</span>
+          <span class="badge {{ status_class(section_summary(section)) }}">{{ section_summary(section) }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section id="p0">
+      <div class="section-head">
+        <h2>P0 必测清单</h2>
+        <span class="hint">{{ p0_pass }}/{{ p0_total }} 通过</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:48px">#</th>
+              <th>检查项</th>
+              <th style="width:100px">结果</th>
+              <th>备注</th>
+              <th style="width:72px">耗时</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in p0_results_enriched %}
+            {% set r = row.result %}
+            <tr id="p0-row-{{ r.case_id }}">
+              <td class="mono">{{ loop.index }}</td>
+              <td>
+                {{ r.case_name }}<br>
+                <span class="mono">{{ r.case_id }}</span>
+                {% if run_id %}
+                <div class="copy-row">
+                  <span class="copy-chip">{{ row.nav.search_key }}</span>
+                  <button type="button" class="copy-btn" data-copy="{{ row.nav.search_key }}">复制</button>
+                </div>
+                {% endif %}
+              </td>
+              <td><span class="badge {{ status_class(r.status.value) }}">{{ r.status.value }}</span></td>
+              <td>{{ r.message | sanitize }}</td>
+              <td class="mono">{{ "%.1f"|format(r.latency_sec) }}s</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {% if issues %}
+    <section id="issues">
+      <div class="section-head">
+        <h2>问题记录</h2>
+        <span class="hint">{{ issues|length }} 项</span>
+      </div>
+      <div class="issue-grid">
+        {% for issue in issues %}
+        <article class="issue-card {{ 'p1' if issue.severity == 'P1' else '' }} open" id="issue-{{ issue.case_id }}">
+          <div class="issue-header" role="button" tabindex="0" aria-expanded="true">
+            <div>
+              <div class="issue-id">{{ issue.id }}</div>
+              <div class="issue-desc">{{ issue.desc }}</div>
+            </div>
+            <span class="issue-toggle" aria-hidden="true">▾</span>
+          </div>
+          <dl class="issue-body">
+            <dt>复现步骤</dt>
+            <dd><ol>{% for step in issue.repro_lines %}<li>{{ step }}</li>{% endfor %}</ol></dd>
+            <dt>期望</dt>
+            <dd><ul>{% for item in issue.expected_lines %}<li>{{ item }}</li>{% endfor %}</ul></dd>
+            <dt>实际</dt>
+            <dd><ul>{% for item in issue.actual_lines %}<li>{{ item }}</li>{% endfor %}</ul></dd>
+            {% if issue.search_key %}
+            <dt>群内定位</dt>
+            <dd>
+              <div class="copy-row">
+                <span class="copy-chip">{{ issue.search_key }}</span>
+                <button type="button" class="copy-btn" data-copy="{{ issue.search_key }}">复制搜索</button>
+              </div>
+            </dd>
+            <dt>追问检查员</dt>
+            <dd>
+              <div class="copy-row">
+                <span class="copy-chip">{{ issue.explain_command }}</span>
+                <button type="button" class="copy-btn" data-copy="{{ issue.explain_command }}">复制</button>
+              </div>
+              <div class="copy-row">
+                <span class="copy-chip">{{ issue.explain_issue_command }}</span>
+                <button type="button" class="copy-btn" data-copy="{{ issue.explain_issue_command }}">复制</button>
+              </div>
+            </dd>
+            {% endif %}
+          </dl>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if suggestions %}
+    <section id="suggestions">
+      <div class="section-head"><h2>优化建议</h2></div>
+      <ul class="suggestions">
+        {% for s in suggestions %}<li>{{ s }}</li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <footer>Generated by Bot Inspector · {{ finished_at }}</footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">已复制到剪贴板</div>
+  <button class="back-top" id="backTop" type="button" title="回到顶部" aria-label="回到顶部">↑</button>
+
+  <script>
+    (function () {
+      const toast = document.getElementById("toast");
+      let toastTimer;
+
+      function showToast(msg) {
+        toast.textContent = msg || "已复制到剪贴板";
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
+      }
+
+      document.querySelectorAll(".copy-btn").forEach((btn) => {
+        btn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const text = btn.getAttribute("data-copy") || "";
+          if (!text) return;
+          try {
+            await navigator.clipboard.writeText(text);
+            btn.classList.add("copied");
+            const prev = btn.textContent;
+            btn.textContent = "已复制";
+            showToast();
+            setTimeout(() => {
+              btn.textContent = prev;
+              btn.classList.remove("copied");
+            }, 1500);
+          } catch {
+            window.prompt("请手动复制：", text);
+          }
+        });
+      });
+
+      document.querySelectorAll(".issue-header").forEach((header) => {
+        const toggle = () => {
+          const card = header.closest(".issue-card");
+          const open = card.classList.toggle("open");
+          header.setAttribute("aria-expanded", open);
+        };
+        header.addEventListener("click", toggle);
+        header.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+        });
+      });
+
+      const dimObserver = new IntersectionObserver(
+        (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("in-view"); }),
+        { threshold: 0.3 }
+      );
+      document.querySelectorAll(".dim-card").forEach((el) => dimObserver.observe(el));
+
+      const backTop = document.getElementById("backTop");
+      window.addEventListener("scroll", () => {
+        backTop.classList.toggle("visible", window.scrollY > 400);
+      });
+      backTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+      const sections = ["scores", "chat-navigation", "overview", "p0", "issues", "suggestions"];
+      const navLinks = document.querySelectorAll(".topbar-nav a");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              navLinks.forEach((a) => {
+                a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+              });
+            }
+          });
+        },
+        { rootMargin: "-40% 0px -50% 0px" }
+      );
+      sections.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+
+      requestAnimationFrame(() => {
+        document.querySelector(".score-ring-fg")?.style.setProperty(
+          "stroke-dashoffset",
+          String(283 - (283 * {{ score.overall | int }}) / 100)
+        );
+      });
+    })();
+  </script>
+</body>
+</html>

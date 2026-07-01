@@ -1,0 +1,117 @@
+# {{ bot_name }} 验收报告
+
+<!-- owner_open_id: {{ owner_open_id }} trigger_chat_id: {{ trigger_chat_id }} -->
+**负责人**: {{ owner_display }}  
+**环境**: {{ env_display }}  
+**巡检套件**: {{ suite_label }}  
+**巡检时间**: {{ started_at }} — {{ finished_at }}  
+{% if run_id %}**本轮编号**: `{{ run_id }}` · **群内搜整轮**: `{{ run_search_key }}`{% endif %}  
+{% if is_full %}**全量通过**: {{ run_pass }}/{{ run_total }} · **P0 通过**: {{ p0_pass }}/{{ p0_total }}{% else %}**P0 通过**: {{ p0_pass }}/{{ p0_total }}{% endif %}  
+**综合评分**: **{{ score.overall }}** 分（{{ score.grade_label }}）
+
+---
+
+## 1. 总览
+
+### 1.0 综合评分（百分制）
+
+| 维度 | 权重 | 得分 | 说明 |
+|---|---:|---:|---|
+{% for dim in score.dimensions %}
+| {{ dim.label }} | {{ dim.weight_pct }}% | {{ dim.score }} | {{ dim.summary }} |
+{% endfor %}
+| **综合** | 100% | **{{ score.overall }}** | **{{ score.grade_label }}（{{ score.grade }}）** |
+
+---
+
+| 章节 | 结论 |
+|---|---|
+{% for section, label in sections %}
+| {{ label }} | {{ section_summary(section) }} |
+{% endfor %}
+
+---
+
+{% if navigation_items %}
+## 1.1 群内定位与追问
+
+{% if run_search_key %}搜整轮：`{{ run_search_key }}`{% endif %}
+
+| 用例 | 状态 | 复制搜索 | 追问检查员 |
+|---|---|---|---|
+{% for item in navigation_items %}
+| {{ item.case_name }} `{{ item.case_id }}` | {{ item.status }} | `{{ item.search_key }}` | `{{ item.explain_command }}`{% if item.explain_issue_command %} / `{{ item.explain_issue_command }}`{% endif %} |
+{% endfor %}
+
+---
+
+{% endif %}
+## 2. P0 必测清单
+
+| 序号 | P0 检查项 | 结果 | 备注 |
+|---|---|---|---|
+{% for r in p0_results %}
+| {{ loop.index }} | {{ r.case_name }} | {{ r.status.value }} | {{ r.message | sanitize }} |
+{% endfor %}
+
+---
+
+## 3. 明细结果
+
+{% for section_key, section_label in detail_sections %}
+### {{ section_label }}
+
+| 检查项 | 结果 | 耗时(s) | 备注 |
+|---|---|---|---|
+{% for r in results_by_section(section_key) %}
+| {{ r.case_name }} | {{ r.status.value }} | {{ "%.2f"|format(r.latency_sec) }} | {{ r.message | sanitize }} |
+{% endfor %}
+
+{% endfor %}
+
+---
+
+## 4. 问题记录
+
+| 问题编号 | Bot 名称 | 问题描述 | 严重等级 | 复现步骤 | 期望结果 | 实际结果 | 群内定位/追问 | 状态 |
+|---|---|---|---|---|---|---|---|
+{% for issue in issues %}
+| {{ issue.id }} | {{ bot_name }} | {{ issue.desc }} | {{ issue.severity }} | {{ issue.repro }} | {{ issue.expected }} | {{ issue.actual }} | {% if issue.search_key %}搜 `{{ issue.search_key }}` / `{{ issue.explain_command }}`{% else %}—{% endif %} | 待处理 |
+{% endfor %}
+{% if not issues %}
+| — | — | 无 | — | — | — | — | — | — |
+{% endif %}
+
+---
+
+## 5. 优化建议
+
+{% for s in suggestions %}
+- {{ s }}
+{% endfor %}
+
+---
+
+## 6. 验收结论
+
+| 验收项 | 结论 |
+|---|---|
+{% for section, label in sections %}
+| {{ label }} | {{ section_summary(section) }} |
+{% endfor %}
+
+**最终结论**:
+
+{% if final_pass %}
+- [x] 可以上线/继续使用
+- [ ] 存在问题，但不影响核心使用
+- [ ] 存在阻塞问题，需要整改后复测
+{% elif final_partial %}
+- [ ] 可以上线/继续使用
+- [x] 存在问题，但不影响核心使用
+- [ ] 存在阻塞问题，需要整改后复测
+{% else %}
+- [ ] 可以上线/继续使用
+- [ ] 存在问题，但不影响核心使用
+- [x] 存在阻塞问题，需要整改后复测
+{% endif %}

@@ -1,0 +1,54 @@
+environments:
+  staging:
+    label: 测试环境
+    notify_chat_id: ${NOTIFY_CHAT_ID}
+  production:
+    label: 生产环境
+    notify_chat_id: ${NOTIFY_CHAT_ID}
+
+# 任务难易度超时档位（Agent / LLM Bot 适用）
+#
+# simple  — 短问答、命令响应、无效命令兜底
+# medium  — 权限判断、读无权限文档、越权检测
+# heavy   — 读文档总结、处理文件、导出附件、长任务
+
+timeout_tiers:
+  simple:
+    reply_within_sec: 90
+    first_ack_sec: 15
+    completion_buffer_sec: 30
+  medium:
+    reply_within_sec: 120
+    first_ack_sec: 15
+    completion_buffer_sec: 45
+  heavy:
+    reply_within_sec: 300
+    first_ack_sec: 15
+    completion_buffer_sec: 60
+
+defaults:
+  reply_timeout_sec: 30
+  latency_warning_sec: 15
+  burst_interval_ms: 200
+  case_interval_sec: 10
+  # 单用例等待上限（须 >= heavy.reply_within_sec + heavy.completion_buffer_sec）
+  completion_wait_sec: 360
+  completion_buffer_sec: 45
+
+file_assets:
+  small_txt:
+    path: assets/files/sample.txt
+    expect_any: ["文件处理测试", "Line 3", "示例"]
+  chinese_name:
+    path: assets/files/测试文件.txt
+  empty:
+    path: assets/files/empty.txt
+  corrupt:
+    path: assets/files/corrupt.bin
+  topic_probe_image:
+    path: assets/files/sample.png
+    kind: image
+
+prompts:
+  help: 帮助
+  ping: ping

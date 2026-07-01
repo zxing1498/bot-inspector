@@ -1,0 +1,27 @@
+# Secrets & local env
+.env
+.env.local
+*.pem
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Runtime & reports
+reports/
+.cache/
+*.lock
+_startup_test.txt
+
+# Local bot registry (copy from *.example)
+config/bots.yaml
+config/bots_registered.yaml
+
+# Internal / deployment scripts (keep locally, do not publish)
+scripts/hermes_*.sh
+scripts/hermes_*.ps1
+scripts/apply_hermes_*.ps1
+scripts/hermes_sync_*.sh

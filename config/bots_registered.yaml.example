@@ -1,0 +1,8 @@
+# 群内「测试 / 注册」流程自动写入的台账（本地文件，勿提交 Git）
+#
+# 首次使用可复制本文件为 bots_registered.yaml（空列表即可）：
+#   copy config\bots_registered.yaml.example config\bots_registered.yaml
+#
+# 在群里 @Inspector 发送「测试 <Bot名>」成功后，会自动追加/更新此处。
+
+bots: []

@@ -1,0 +1,3 @@
+这是一个用于 Bot 文件处理测试的示例文件。
+内容包含中文和 English mixed text.
+Line 3 for testing.

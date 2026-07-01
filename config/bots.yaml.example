@@ -1,0 +1,51 @@
+# Bot 台账示例 — 复制为 bots.yaml 后填写真实信息
+#
+#   copy config\bots.yaml.example config\bots.yaml    (Windows)
+#   cp config/bots.yaml.example config/bots.yaml      (macOS/Linux)
+#
+# bots.yaml 已在 .gitignore 中，不会提交到 Git。
+#
+# 能力标签 capabilities 可选值:
+#   messaging, topic_reply, doc_access, file_process, card_reply, export_file
+
+bots:
+  - name: demo-bot
+  # 被测 Bot 在飞书开放平台的 App ID（凭证与基础信息页，形如 cli_xxxxxxxx）
+    app_id: cli_REPLACE_TARGET_APP_ID
+  # 被测 Bot 的 open_id（用于群内 @；见 docs/GETTING_STARTED.md「如何获取 open_id」）
+    open_id: ou_REPLACE_TARGET_OPEN_ID
+    owner: ""
+    env: staging
+    target_app_id: cli_REPLACE_TARGET_APP_ID
+
+    chats:
+      # 普通测试群 chat_id（形如 oc_xxxxxxxx）
+      normal_group: oc_REPLACE_NORMAL_GROUP_CHAT_ID
+      # 话题群（可选；无话题用例可留空或删除）
+      topic_group: oc_REPLACE_TOPIC_GROUP_CHAT_ID
+
+    capabilities:
+      - messaging
+      - topic_reply
+      - doc_access
+      - file_process
+
+    backend:
+      # 被测 Bot 后端探针（可选；无则填 type: skip）
+      health_url: https://your-service.example.com/health
+      callback_url: https://your-service.example.com/
+      log_query:
+        type: skip
+        trace_field: request_id
+
+    test_assets:
+      # 覆盖 config/test_defaults.yaml 中的默认文档链接
+      doc_permitted: https://your-tenant.feishu.cn/docx/REPLACE_PERMITTED_DOC
+      doc_denied: https://your-tenant.feishu.cn/docx/REPLACE_DENIED_DOC
+      slow_trigger: 请写一份包含五个章节的详细分析报告
+      export_trigger: 导出报告
+
+    accounts:
+      # 安全/越权用例（可选）
+      privileged: ou_REPLACE_PRIVILEGED_USER
+      restricted: ou_REPLACE_RESTRICTED_USER

@@ -1,0 +1,396 @@
+# 测试用例定义 — 按清单章节组织
+#
+# difficulty（可选）: simple | medium | heavy
+#   超时档位见 config/environments.yaml → timeout_tiers
+#
+suites:
+  p0:
+    section: "11. P0 必测清单"
+    cases:
+      - id: p0_group_reply
+        name: Bot 能在目标群中接收并回复消息
+        section: p0
+        report_section: messaging
+        difficulty: simple
+        capabilities: [messaging]
+        prompt: "请回复「群聊正常」"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: reply_within
+          - type: content_not_empty
+          - type: latency_warning
+
+      - id: p0_topic_reply
+        name: Bot 能在话题中正确回复
+        section: p0
+        report_section: messaging
+        difficulty: simple
+        capabilities: [topic_reply]
+        prompt: "请在本话题回复「话题正常」"
+        channel: topic_group
+        at_bot: true
+        in_thread: true
+        assertions:
+          - type: reply_within
+          - type: same_thread
+          - type: latency_warning
+
+      - id: p0_doc_denied
+        name: Bot 对无权限文档拒绝访问并给出明确提示
+        section: p0
+        report_section: docs
+        difficulty: medium
+        capabilities: [doc_access]
+        prompt: "请读取这个文档并总结要点"
+        channel: normal_group
+        at_bot: true
+        attach_doc: denied
+        assertions:
+          - type: reply_within
+          - type: permission_hint
+          - type: not_system_error
+
+      - id: p0_doc_access
+        name: Bot 能访问有权限的飞书文档
+        section: p0
+        report_section: docs
+        difficulty: heavy
+        capabilities: [doc_access]
+        prompt: "请读取这个文档并总结要点"
+        channel: normal_group
+        at_bot: true
+        attach_doc: permitted
+        assertions:
+          - type: reply_within
+          - type: content_not_empty
+          - type: not_system_error
+
+      - id: p0_file_download
+        name: Bot 能识别并下载群内文件
+        section: p0
+        report_section: files
+        difficulty: heavy
+        capabilities: [file_process]
+        prompt: "请处理这个文件"
+        channel: normal_group
+        at_bot: true
+        attach_file: small_txt
+        assertions:
+          - type: reply_within
+          - type: content_not_empty
+          - type: mentions_any
+          - type: not_system_error
+
+      - id: p0_invalid_cmd_graceful
+        name: Bot 对无效指令有友好兜底
+        section: p0
+        report_section: ops
+        difficulty: simple
+        capabilities: [messaging]
+        prompt: "INVALID_CMD_XYZ_999"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: reply_within
+          - type: not_system_error
+          - type: graceful_error_hint
+
+      - id: p0_slow_ack
+        name: Bot 对复杂请求有即时反馈（首响/处理中）
+        section: p0
+        report_section: ops
+        difficulty: medium
+        capabilities: [messaging]
+        prompt: "{slow_trigger}"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: first_ack_within
+          - type: not_system_error
+
+  messaging:
+    section: "4. 消息收发能力检查"
+    cases:
+      - id: msg_rich_text
+        name: 富文本消息
+        section: messaging
+        capabilities: [messaging]
+        prompt: "请用列表格式返回三个要点"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: content_not_empty
+
+      - id: msg_card
+        name: 卡片消息
+        section: messaging
+        capabilities: [card_reply]
+        prompt: "返回一张信息卡片"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: card_schema_valid
+
+      - id: msg_long_text
+        name: 长消息处理
+        section: messaging
+        capabilities: [messaging]
+        prompt: "请总结以下内容"
+        channel: normal_group
+        at_bot: true
+        extra_text: "这是一段很长的测试文本。" 
+        repeat_extra: 50
+        assertions:
+          - type: reply_within
+            timeout_sec: 60
+          - type: content_not_empty
+
+      - id: msg_special_chars
+        name: 特殊字符处理
+        section: messaging
+        capabilities: [messaging]
+        prompt: "测试特殊字符：中文 English 🎉 \n\t \"'<>&"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: content_not_empty
+
+      - id: msg_rapid_fire
+        name: 快速连续消息
+        section: messaging
+        capabilities: [messaging]
+        prompt: "快速消息"
+        channel: normal_group
+        at_bot: true
+        burst_count: 5
+        assertions:
+          - type: reply_within
+            timeout_sec: 60
+          - type: no_duplicate_replies
+            max_replies: 6
+
+      - id: msg_help
+        name: 帮助指令
+        section: messaging
+        capabilities: [messaging]
+        prompt: "帮助"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: content_not_empty
+
+      - id: topic_thread_attach_kb_md
+        name: 话题内发附件请求 KB 知识 MD
+        section: messaging
+        report_section: files
+        difficulty: heavy
+        capabilities: [topic_reply, export_file]
+        prompt: "{topic_kb_md_prompt}"
+        channel: topic_group
+        at_bot: true
+        in_thread: true
+        attach_file: small_txt
+        assertions:
+          - type: reply_within
+          - type: same_thread
+          - type: has_file_or_attachment
+
+      - id: topic_thread_image_weather
+        name: 话题内发图片请求天气图
+        section: messaging
+        report_section: files
+        difficulty: heavy
+        capabilities: [topic_reply, file_process, export_file]
+        prompt: "{topic_weather_image_prompt}"
+        channel: topic_group
+        at_bot: true
+        in_thread: true
+        attach_file: topic_probe_image
+        assertions:
+          - type: reply_within
+          - type: same_thread
+          - type: has_file_or_attachment
+
+  docs:
+    section: "6. 飞书文档访问能力检查"
+    cases:
+      - id: doc_permitted
+        name: 访问有权限文档
+        section: docs
+        capabilities: [doc_access]
+        prompt: "请读取这个文档并总结要点"
+        channel: normal_group
+        at_bot: true
+        attach_doc: permitted
+        assertions:
+          - type: reply_within
+            timeout_sec: 60
+          - type: content_not_empty
+          - type: not_system_error
+
+      - id: doc_denied
+        name: 访问无权限文档
+        section: docs
+        capabilities: [doc_access]
+        prompt: "读取文档"
+        channel: normal_group
+        at_bot: true
+        attach_doc: denied
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: permission_hint
+
+  files:
+    section: "7. 群文件下载与发送能力检查"
+    cases:
+      - id: file_small
+        name: 下载小文件
+        section: files
+        capabilities: [file_process]
+        prompt: "处理文件"
+        channel: normal_group
+        at_bot: true
+        attach_file: small_txt
+        assertions:
+          - type: reply_within
+            timeout_sec: 60
+          - type: content_not_empty
+
+      - id: file_chinese_name
+        name: 中文文件名处理
+        section: files
+        capabilities: [file_process]
+        prompt: "处理文件"
+        channel: normal_group
+        at_bot: true
+        attach_file: chinese_name
+        assertions:
+          - type: reply_within
+            timeout_sec: 60
+          - type: content_not_empty
+
+      - id: file_empty
+        name: 空文件处理
+        section: files
+        capabilities: [file_process]
+        prompt: "处理文件"
+        channel: normal_group
+        at_bot: true
+        attach_file: empty
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: not_crash
+
+      - id: file_corrupt
+        name: 异常文件处理
+        section: files
+        capabilities: [file_process]
+        prompt: "处理文件"
+        channel: normal_group
+        at_bot: true
+        attach_file: corrupt
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: not_crash
+
+      - id: file_export
+        name: 导出指令后发送文件或附件
+        section: files
+        capabilities: [export_file]
+        prompt: "{export_trigger}"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: reply_within
+            timeout_sec: 120
+          - type: has_file_or_attachment
+
+  ops:
+    section: "9. 稳定性与运维检查"
+    cases:
+      - id: ops_health
+        name: 服务健康检查
+        section: ops
+        capabilities: [messaging]
+        probe: health
+        assertions:
+          - type: health_ok
+
+      - id: ops_callback
+        name: 回调地址可用
+        section: ops
+        capabilities: [messaging]
+        probe: callback
+        assertions:
+          - type: callback_reachable
+
+      - id: ops_log_fields
+        name: 日志完整
+        section: ops
+        capabilities: [messaging]
+        prompt: "ping"
+        channel: normal_group
+        at_bot: true
+        probe: log_trace
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: log_has_trace
+
+  security:
+    section: "10. 安全与合规检查"
+    cases:
+      - id: sec_cross_group
+        name: 群权限隔离
+        section: security
+        capabilities: [messaging]
+        prompt: "{cross_group_probe}"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: no_cross_group_enumeration
+
+      - id: sec_sensitive_input
+        name: 敏感数据处理
+        section: security
+        capabilities: [messaging]
+        prompt: "我的身份证是110101199001011234，手机号13800138000"
+        channel: normal_group
+        at_bot: true
+        assertions:
+          - type: reply_within
+            timeout_sec: 30
+          - type: sensitive_handled
+
+  config:
+    section: "3. 基础配置与权限检查"
+    cases:
+      - id: cfg_in_group
+        name: Bot 已加入目标群
+        section: config
+        capabilities: [messaging]
+        probe: bot_in_group
+        assertions:
+          - type: bot_in_chat
+
+      - id: cfg_token
+        name: Token 和密钥有效
+        section: config
+        capabilities: [messaging]
+        probe: token_valid
+        assertions:
+          - type: token_valid
